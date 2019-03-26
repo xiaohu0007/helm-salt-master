@@ -56,13 +56,6 @@ tolerations: []
 affinity: {}
 
 storage:
-  etc_raas:
-    size: 20g
-    storageClass: ibmc-file-silver
-  var_lib_raas:
-    size: 20g
-    storageClass: ibmc-file-silver
-  srv:
     size: 20g
     storageClass: ibmc-file-silver
 

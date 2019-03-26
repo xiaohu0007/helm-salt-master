@@ -40,8 +40,6 @@ spec:
           volumeMounts:
             - mountPath: /srv
               name: raas-srv
-            - mountPath: /etc/raas
-              name: raas-etc-raas
             - mountPath: /var/lib/raas
               name: raas-var-lib-raas
             - mountPath: /etc/raas/raas
@@ -59,15 +57,11 @@ spec:
           resources:
 {{ toYaml .Values.resources | indent 12 }}
       volumes:
-      - name: raas-etc-raas
-        persistentVolumeClaim:
-          claimName: {{ include "salt-enterprise.fullname" . }}-etc-raas
       - name: raas-srv
         persistentVolumeClaim:
           claimName: {{ include "salt-enterprise.fullname" . }}-srv
       - name: raas-var-lib-raas
-        persistentVolumeClaim:
-          claimName: {{ include "salt-enterprise.fullname" . }}-var-lib-raas
+        emptyDir: {}
       - name: raas-secrets
         secret:
           defaultMode: 420

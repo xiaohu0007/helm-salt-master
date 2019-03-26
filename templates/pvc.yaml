@@ -1,21 +1,3 @@
-kind: PersistentVolumeClaim
-metadata:
-  annotations:
-    "helm.sh/resource-policy": keep
-  labels:
-    app: {{ include "salt-enterprise.name" . }}
-    chart: {{ include "salt-enterprise.chart" . }}
-    release: {{ .Release.Name }}
-    heritage: {{ .Release.Service }}
-  name: {{ include "salt-enterprise.fullname" . }}-etc-raas
-spec:
-  accessModes:
-  - ReadWriteMany
-  resources:
-    requests:
-      storage: {{ .Values.storage.etc_raas.size }}
-  storageClassName: {{ .Values.storage.etc_raas.storageClass }}
----
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
@@ -32,24 +14,5 @@ spec:
   - ReadWriteMany
   resources:
     requests:
-      storage: {{ .Values.storage.srv.size }}
-  storageClassName: {{ .Values.storage.srv.storageClass }}
----
-apiVersion: v1
-kind: PersistentVolumeClaim
-metadata:
-  annotations:
-    "helm.sh/resource-policy": keep
-  labels:
-    app: {{ include "salt-enterprise.name" . }}
-    chart: {{ include "salt-enterprise.chart" . }}
-    release: {{ .Release.Name }}
-    heritage: {{ .Release.Service }}
-  name: {{ include "salt-enterprise.fullname" . }}-var-lib-raas
-spec:
-  accessModes:
-  - ReadWriteMany
-  resources:
-    requests:
-      storage: {{ .Values.storage.var_lib_raas.size}}
-  storageClassName: {{ .Values.storage.var_lib_raas.storageClass }}
+      storage: {{ .Values.storage.size }}
+  storageClassName: {{ .Values.storage.storageClass }}
