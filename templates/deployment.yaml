@@ -1,0 +1,84 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "salt-enterprise.fullname" . }}
+  labels:
+    app: {{ include "salt-enterprise.name" . }}
+    chart: {{ include "salt-enterprise.chart" . }}
+    release: {{ .Release.Name }}
+    heritage: {{ .Release.Service }}
+spec:
+  replicas: {{ .Values.replicaCount }}
+  selector:
+    matchLabels:
+      app: {{ include "salt-enterprise.name" . }}
+      release: {{ .Release.Name }}
+  template:
+    metadata:
+      labels:
+        app: {{ include "salt-enterprise.name" . }}
+        release: {{ .Release.Name }}
+    spec:
+      containers:
+        - name: {{ .Chart.Name }}
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          ports:
+            - name: http
+              containerPort: 8080
+              protocol: TCP
+          livenessProbe:
+            httpGet:
+              path: /
+              port: 8080
+          readinessProbe:
+            httpGet:
+              path: /
+              port: 8080
+          volumeMounts:
+            - mountPath: /srv
+              name: raas-srv
+            - mountPath: /etc/raas
+              name: raas-etc-raas
+            - mountPath: /var/lib/raas
+              name: raas-var-lib-raas
+            - mountPath: /etc/raas/raas
+              name: raas-secrets
+              subPath: raas
+            - mountPath: /etc/raas/raas.license
+              name: raas-secrets
+              subPath: raas.license
+            - mountPath: /etc/raas/pki/.raas.key
+              name: raas-secrets
+              subPath: raas.key
+            - mountPath: /etc/raas/ca_bundle.pem
+              name: raas-secrets
+              subPath: ca_bundle
+          resources:
+{{ toYaml .Values.resources | indent 12 }}
+      volumes:
+      - name: raas-etc-raas
+        persistentVolumeClaim:
+          claimName: {{ include "salt-enterprise.fullname" . }}-etc-raas
+      - name: raas-srv
+        persistentVolumeClaim:
+          claimName: {{ include "salt-enterprise.fullname" . }}-srv
+      - name: raas-var-lib-raas
+        persistentVolumeClaim:
+          claimName: {{ include "salt-enterprise.fullname" . }}-var-lib-raas
+      - name: raas-secrets
+        secret:
+          defaultMode: 420
+          secretName: {{ include "salt-enterprise.fullname" . }}-secrets
+    {{- with .Values.nodeSelector }}
+      nodeSelector:
+{{ toYaml . | indent 8 }}
+    {{- end }}
+    {{- with .Values.affinity }}
+      affinity:
+{{ toYaml . | indent 8 }}
+    {{- end }}
+    {{- with .Values.tolerations }}
+      tolerations:
+{{ toYaml . | indent 8 }}
+    {{- end }}
