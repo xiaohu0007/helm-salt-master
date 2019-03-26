@@ -18,6 +18,8 @@ spec:
       labels:
         app: {{ include "salt-enterprise.name" . }}
         release: {{ .Release.Name }}
+      annotations:
+        checksum/config: {{ include (print $.Template.BasePath "/secrets.yaml") . | sha256sum }}
     spec:
       containers:
         - name: {{ .Chart.Name }}
