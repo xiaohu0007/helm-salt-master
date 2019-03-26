@@ -9,9 +9,6 @@ image:
   tag: 6.0
   pullPolicy: IfNotPresent
 
-nameOverride: ""
-fullnameOverride: ""
-
 service:
   type: ClusterIP
   port: 80

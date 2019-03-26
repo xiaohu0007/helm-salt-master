@@ -18,9 +18,6 @@ image:
   tag: 6.0
   pullPolicy: IfNotPresent
 
-nameOverride: ""
-fullnameOverride: ""
-
 #
 # Either an Ingress or LoadBlancer is required for salt masters to interact with salt-enterprise.
 #
@@ -139,5 +136,4 @@ secrets:
     i+3XjJ7/peF3xMvTMoy35DcT3E2ZeSVjouZs15O90kI3k2daS2OHJABW0vSj4nLz
     +PQzp/B9cQmOO8dCe049Q3oaUA==
     -----END CERTIFICATE-----
-
 ```
