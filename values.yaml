@@ -58,14 +58,74 @@ storage:
 secrets:
   # This is the core configuration for salt enterprise. Your database connection information and other
   # settings will go here.
+  #
+  # These are here as examples, you must edit these to match your environment.
+  #
   raas: |
-    option1: foo
-    option2: bar
+    port: 8080
+    audit:
+      enabled: false
+      valid_logins: false
+    authers:
+      ldap:
+        log_detail: ERROR
+    bigret: sql
+    customer_id: <your customer id>
+    log_datefmt: '%H:%M:%S'
+    log_file: /dev/null
+    log_fmt_console: '[%(levelname)-8s][%(name)-5s:%(lineno)-4d][%(processName)s:%(process)s] %(message)s'
+    log_level: info
+    raas_presence_expiration: 3600
+    redis:
+      broker_db: 0
+      cache_db: 2
+      result_db: 1
+      ssl:
+        ssl_cert_reqs: CERT_REQUIRED
+        ssl_ca_certs: /etc/raas/ca-bundle.pem
+      url: <your redis url>
+    sec:
+      content_url: https://enterprise.saltstack.com/secops_downloads
+      download_enabled: true
+      download_frequency: 86400
+      git_frequency: 3600
+      git_pull_enabled: false
+      ingest_on_boot: true
+      ingest_override: true
+      locke_dir: locke
+      post_ingest_cleanup: true
+      stats_snapshot_interval: 3600
+      username: secops
+    sql:
+      host: <your postgres server host>
+      password: <your postgres password
+      port: <your postgres port>
+      ssl: true
+      username: <your postgres username>
   # raas.license is a small binary file. You should base64 encode it and paste the contents here
   #
-  raas_license: This should contain your base64 encoded raas.license file.
+  raas_license: VGhpcyBzaG91bGQgY29udGFpbiB5b3VyIGJhc2U2NCBlbmNvZGVkIHJhYXMubGljZW5zZSBmaWxlCg==
   # this will populate the /etc/raas/pki/.raas.key file. This value will be automatically converted to base64
   raas_encryption_key: SuperSecretEncryptionKey
-  # We will use these SSL Certificates to validate SSL certificate
+  # We will validate SSL certificates against these CA certificates
   ca_bundle: |
+    -----BEGIN CERTIFICATE-----
+    MIIDDzCCAfegAwIBAgIJANEH58y2/kzHMA0GCSqGSIb3DQEBCwUAMB4xHDAaBgNV
+    BAMME0lCTSBDbG91ZCBEYXRhYmFzZXMwHhcNMTgwNjI1MTQyOTAwWhcNMjgwNjIy
+    MTQyOTAwWjAeMRwwGgYDVQQDDBNJQk0gQ2xvdWQgRGF0YWJhc2VzMIIBIjANBgkq
+    hkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEA8lpaQGzcFdGqeMlmqjffMPpIQhqpd8qJ
+    Pr3bIkrXJbTcJJ9uIckSUcCjw4Z/rSg8nnT13SCcOl+1to+7kdMiU8qOWKiceYZ5
+    y+yZYfCkGaiZVfazQBm45zBtFWv+AB/8hfCTdNF7VY4spaA3oBE2aS7OANNSRZSK
+    pwy24IUgUcILJW+mcvW80Vx+GXRfD9Ytt6PRJgBhYuUBpgzvngmCMGBn+l2KNiSf
+    weovYDCD6Vngl2+6W9QFAFtWXWgF3iDQD5nl/n4mripMSX6UG/n6657u7TDdgkvA
+    1eKI2FLzYKpoKBe5rcnrM7nHgNc/nCdEs5JecHb1dHv1QfPm6pzIxwIDAQABo1Aw
+    TjAdBgNVHQ4EFgQUK3+XZo1wyKs+DEoYXbHruwSpXjgwHwYDVR0jBBgwFoAUK3+X
+    Zo1wyKs+DEoYXbHruwSpXjgwDAYDVR0TBAUwAwEB/zANBgkqhkiG9w0BAQsFAAOC
+    AQEAJf5dvlzUpqaix26qJEuqFG0IP57QQI5TCRJ6Xt/supRHo63eDvKw8zR7tlWQ
+    lV5P0N2xwuSl9ZqAJt7/k/3ZeB+nYwPoyO3KvKvATunRvlPBn4FWVXeaPsG+7fhS
+    qsejmkyonYw77HRzGOzJH4Zg8UN6mfpbaWSsyaExvqknCp9SoTQP3D67AzWqb1zY
+    doqqgGIZ2nxCkp5/FXxF/TMb55vteTQwfgBy60jVVkbF7eVOWCv0KaNHPF5hrqbN
+    i+3XjJ7/peF3xMvTMoy35DcT3E2ZeSVjouZs15O90kI3k2daS2OHJABW0vSj4nLz
+    +PQzp/B9cQmOO8dCe049Q3oaUA==
+    -----END CERTIFICATE-----
 
