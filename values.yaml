@@ -98,8 +98,9 @@ secrets:
   # raas.license is a small binary file. You should base64 encode it and paste the contents here
   #
   raas_license: VGhpcyBzaG91bGQgY29udGFpbiB5b3VyIGJhc2U2NCBlbmNvZGVkIHJhYXMubGljZW5zZSBmaWxlCg==
-  # this will populate the /etc/raas/pki/.raas.key file. This value will be automatically converted to base64
-  raas_encryption_key: SuperSecretEncryptionKey
+  # This will populate the /etc/raas/pki/.raas.key file. This value will be automatically converted to base64
+  # This value must be at least 32 characters
+  raas_encryption_key: MySuperSecretKeyThatsAtleast32Characters
   # We will validate SSL certificates against these CA certificates
   ca_bundle: |
     -----BEGIN CERTIFICATE-----

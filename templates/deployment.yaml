@@ -1,4 +1,4 @@
-apiVersion: apps/v1
+  apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: {{ include "salt-enterprise.fullname" . }}
@@ -25,6 +25,12 @@ spec:
         - name: {{ .Chart.Name }}
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
           imagePullPolicy: {{ .Values.image.pullPolicy }}
+          env:
+            - name: RAAS_ENCRYPTION_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: {{ include "salt-enterprise.fullname" . }}-secrets
+                  key: raas.key
           ports:
             - name: http
               containerPort: 8080
@@ -42,15 +48,14 @@ spec:
               name: raas-srv
             - mountPath: /var/lib/raas
               name: raas-var-lib-raas
+            - mountPath: /etc/raas
+              name: raas-etc-raas
             - mountPath: /etc/raas/raas
               name: raas-secrets
               subPath: raas
             - mountPath: /etc/raas/raas.license
               name: raas-secrets
               subPath: raas.license
-            - mountPath: /etc/raas/pki/.raas.key
-              name: raas-secrets
-              subPath: raas.key
             - mountPath: /etc/raas/ca_bundle.pem
               name: raas-secrets
               subPath: ca_bundle
@@ -62,9 +67,11 @@ spec:
           claimName: {{ include "salt-enterprise.fullname" . }}-srv
       - name: raas-var-lib-raas
         emptyDir: {}
+      - name: raas-etc-raas
+        emptyDir: {}
       - name: raas-secrets
         secret:
-          defaultMode: 420
+          defaultMode: 444
           secretName: {{ include "salt-enterprise.fullname" . }}-secrets
     {{- with .Values.nodeSelector }}
       nodeSelector:
