@@ -44,8 +44,6 @@ spec:
               path: /
               port: 8080
           volumeMounts:
-            - mountPath: /srv
-              name: raas-srv
             - mountPath: /var/lib/raas
               name: raas-var-lib-raas
             - mountPath: /etc/raas
@@ -62,9 +60,6 @@ spec:
           resources:
 {{ toYaml .Values.resources | indent 12 }}
       volumes:
-      - name: raas-srv
-        persistentVolumeClaim:
-          claimName: {{ include "salt-enterprise.fullname" . }}-srv
       - name: raas-var-lib-raas
         emptyDir: {}
       - name: raas-etc-raas
