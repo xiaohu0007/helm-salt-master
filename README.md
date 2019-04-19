@@ -55,10 +55,6 @@ tolerations: []
 
 affinity: {}
 
-storage:
-    size: 20g
-    storageClass: ibmc-file-silver
-
 secrets:
   # This is the core configuration for salt enterprise. Your database connection information and other
   # settings will go here.
