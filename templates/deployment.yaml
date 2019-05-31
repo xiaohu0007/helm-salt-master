@@ -9,6 +9,11 @@ metadata:
     heritage: {{ .Release.Service }}
 spec:
   replicas: {{ .Values.replicaCount }}
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 1
   selector:
     matchLabels:
       app: {{ include "salt-enterprise.name" . }}
@@ -36,10 +41,16 @@ spec:
               containerPort: 8080
               protocol: TCP
           livenessProbe:
+            initialDelaySeconds: 120
+            periodSeconds: 120
+            timeoutSeconds: 30
             httpGet:
               path: /
               port: 8080
           readinessProbe:
+            initialDelaySeconds: 120
+            periodSeconds: 120
+            timeoutSeconds: 30
             httpGet:
               path: /
               port: 8080
