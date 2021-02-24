@@ -1,10 +1,10 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: {{ include "salt-enterprise.fullname" . }}
+  name: {{ include "salt-master.fullname" . }}
   labels:
-    app: {{ include "salt-enterprise.name" . }}
-    chart: {{ include "salt-enterprise.chart" . }}
+    app: {{ include "salt-master.name" . }}
+    chart: {{ include "salt-master.chart" . }}
     release: {{ .Release.Name }}
     heritage: {{ .Release.Service }}
 spec:
@@ -16,29 +16,45 @@ spec:
       maxUnavailable: 1
   selector:
     matchLabels:
-      app: {{ include "salt-enterprise.name" . }}
+      app: {{ include "salt-master.name" . }}
       release: {{ .Release.Name }}
   template:
     metadata:
       labels:
-        app: {{ include "salt-enterprise.name" . }}
+        app: {{ include "salt-master.name" . }}
         release: {{ .Release.Name }}
-      annotations:
-        checksum/config: {{ include (print $.Template.BasePath "/secrets.yaml") . | sha256sum }}
-    spec:
+    spec:      
+      hostNetwork: {{ .Values.hostNetwork }}
       containers:
         - name: {{ .Chart.Name }}
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
           imagePullPolicy: {{ .Values.image.pullPolicy }}
           env:
-            - name: RAAS_ENCRYPTION_KEY
-              valueFrom:
-                secretKeyRef:
-                  name: {{ include "salt-enterprise.fullname" . }}-secrets
-                  key: raas.key
+            - name: SALT_MASTER_CONFIG
+              value: |
+{{ .Values.saltMasterConfig | indent 16 }}
+            - name: SALT_API_CONFIG
+              value: |
+{{ .Values.saltApiConfig | indent 16}}
+            {{- if .Values.saltSharedSecret }}
+            - name: SALT_SHARED_SECRET
+              value: "{{ .Values.saltSharedSecret }}"
+            {{- end }}
           ports:
-            - name: http
-              containerPort: 8080
+            - name: publisher
+              containerPort: 4505
+              protocol: TCP
+              {{- if .Values.enableSaltMasterHostPort }}
+              hostPort: 4505
+              {{- end }}
+            - name: communication
+              containerPort: 4506
+              protocol: TCP
+              {{- if .Values.enableSaltMasterHostPort }}
+              hostPort: 4506
+              {{- end }}
+            - name: api
+              containerPort: 8000
               protocol: TCP
           livenessProbe:
             initialDelaySeconds: 120
@@ -46,40 +62,38 @@ spec:
             timeoutSeconds: 30
             httpGet:
               path: /
-              port: 8080
+              port: 8000
           readinessProbe:
             initialDelaySeconds: 120
             periodSeconds: 120
             timeoutSeconds: 30
             httpGet:
               path: /
-              port: 8080
+              port: 8000
           volumeMounts:
-            - mountPath: /var/lib/raas
-              name: raas-var-lib-raas
-            - mountPath: /etc/raas
-              name: raas-etc-raas
-            - mountPath: /etc/raas/raas
-              name: raas-secrets
-              subPath: raas
-            - mountPath: /etc/raas/raas.license
-              name: raas-secrets
-              subPath: raas.license
-            - mountPath: /etc/raas/ca_bundle.pem
-              name: raas-secrets
-              subPath: ca_bundle
+            - mountPath: /etc/salt/master.d # Config files
+              name: data
+              subPath: master.d
+            - mountPath: /etc/salt/pki # Master and minion authentication keys
+              name: data
+              subPath: pki
+            - mountPath: /var/cache/salt # Job and minion data cache
+              name: data
+              subPath: cache
+            - mountPath: /srv/salt # Contains states, pillars etc if not using gitfs backend
+              name: data
+              subPath: srv
           resources:
 {{ toYaml .Values.resources | indent 12 }}
       volumes:
-      - name: raas-var-lib-raas
-        emptyDir: {}
-      - name: raas-etc-raas
-        emptyDir: {}
-      - name: raas-secrets
-        secret:
-          defaultMode: 444
-          secretName: {{ include "salt-enterprise.fullname" . }}-secrets
-    {{- with .Values.nodeSelector }}
+        - name: data
+        {{- if .Values.persistence.enabled }}
+          persistentVolumeClaim:
+            claimName: {{ include "salt-master.fullname" . }}
+        {{- else }}
+          emptyDir: {}
+        {{- end }}
+      {{- with .Values.nodeSelector }}
       nodeSelector:
 {{ toYaml . | indent 8 }}
     {{- end }}

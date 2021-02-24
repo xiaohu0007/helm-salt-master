@@ -1,0 +1,24 @@
+{{- $persistence := .Values.persistence -}}
+{{- if $persistence.enabled }}
+kind: PersistentVolumeClaim
+apiVersion: v1
+metadata:
+  name: {{ include "salt-master.fullname" . }}
+  {{- if eq $persistence.resourcePolicy "keep" }}
+  annotations:
+    helm.sh/resource-policy: keep
+  {{- end }}
+spec:
+  accessModes: 
+    - {{ $persistence.accessMode }}
+  resources:
+    requests:
+      storage: {{ $persistence.size }}
+  {{- if $persistence.storageClass }}
+    {{- if eq "-" $persistence.storageClass }}
+  storageClassName: ""
+    {{- else }}
+  storageClassName: {{ $persistence.storageClass }}
+    {{- end }}
+  {{- end }}
+{{- end }}

@@ -1,19 +1,17 @@
 {{- if .Values.ingress.enabled -}}
-{{- $fullName := include "salt-enterprise.fullname" . -}}
+{{- $fullName := include "salt-master.fullname" . -}}
 {{- $ingressPath := .Values.ingress.path -}}
 apiVersion: extensions/v1beta1
 kind: Ingress
 metadata:
   name: {{ $fullName }}
   labels:
-    app: {{ include "salt-enterprise.name" . }}
-    chart: {{ include "salt-enterprise.chart" . }}
+    app: {{ include "salt-master.name" . }}
+    chart: {{ include "salt-master.chart" . }}
     release: {{ .Release.Name }}
     heritage: {{ .Release.Service }}
 {{- with .Values.ingress.annotations }}
   annotations:
-    # Required for IBM Cloud ALB to not nuke the websocket connections
-    ingress.bluemix.net/proxy-read-timeout: serviceName={{ $fullName }} timeout=300s
 {{ toYaml . | indent 4 }}
 {{- end }}
 spec:
@@ -34,7 +32,7 @@ spec:
         paths:
           - path: {{ $ingressPath }}
             backend:
-              serviceName: {{ $fullName }}
+              serviceName: {{ $.Release.Name }}-salt-api
               servicePort: http
   {{- end }}
 {{- end }}

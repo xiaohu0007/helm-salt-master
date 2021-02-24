@@ -1,0 +1,49 @@
+---
+{{- $saltMaster := .Values.service.saltMaster -}}
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ .Release.Name }}-salt-master
+  labels:
+    app: {{ include "salt-master.name" . }}
+    chart: {{ include "salt-master.chart" . }}
+    release: {{ .Release.Name }}
+    heritage: {{ .Release.Service }}
+{{- with $saltMaster.annotations }}
+  annotations:
+{{ toYaml . | indent 4 }}
+{{- end }}
+spec:
+  type: {{ $saltMaster.type }}
+  ports:
+    - name: salt-publisher
+      port: {{ $saltMaster.publisherPort }}
+      targetPort: 4505
+    - name: salt-communication
+      port: {{ $saltMaster.communicationPort }}
+      targetPort: 4506
+  selector:
+    app: {{ include "salt-master.name" . }}
+    release: {{ .Release.Name }}
+---
+{{- $saltApi := .Values.service.saltApi -}}
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ .Release.Name }}-salt-api
+  labels:
+    app: {{ include "salt-master.name" . }}
+    chart: {{ include "salt-master.chart" . }}
+    release: {{ .Release.Name }}
+    heritage: {{ .Release.Service }}
+spec:
+  type: {{ $saltApi.type }}
+  ports:
+    - name: http
+      protocol: TCP
+      port: {{ $saltApi.port }}
+      targetPort: 8000
+  selector:
+    app: {{ include "salt-master.name" . }}
+    release: {{ .Release.Name }}
+ 
