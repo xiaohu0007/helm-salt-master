@@ -1,4 +1,6 @@
-# salt-master: A chart for installing Salt using helm
+# salt-master: A chart for installing Salt Master using helm
+
+Salt Master Docker iamge used: `saltstack/salt:3002.5`
 
 ## Instructions
 

@@ -1,23 +1,24 @@
-{{- if .Values.ingress.enabled -}}
-{{- $fullName := include "salt-master.fullname" . -}}
-{{- $ingressPath := .Values.ingress.path -}}
+{{- $saltApiIngress := .Values.ingress.saltApi -}}
+
+{{- if $saltApiIngress.enabled -}}
+{{- $ingressPath := $saltApiIngress.path -}}
 apiVersion: extensions/v1beta1
 kind: Ingress
 metadata:
-  name: {{ $fullName }}
+  name: {{ $.Release.Name }}-salt-api
   labels:
     app: {{ include "salt-master.name" . }}
     chart: {{ include "salt-master.chart" . }}
     release: {{ .Release.Name }}
     heritage: {{ .Release.Service }}
-{{- with .Values.ingress.annotations }}
+{{- with $saltApiIngress.annotations }}
   annotations:
 {{ toYaml . | indent 4 }}
 {{- end }}
 spec:
-{{- if .Values.ingress.tls }}
+{{- if $saltApiIngress.tls }}
   tls:
-  {{- range .Values.ingress.tls }}
+  {{- range $saltApiIngress.tls }}
     - hosts:
       {{- range .hosts }}
         - {{ . | quote }}
@@ -26,7 +27,7 @@ spec:
   {{- end }}
 {{- end }}
   rules:
-  {{- range .Values.ingress.hosts }}
+  {{- range $saltApiIngress.hosts }}
     - host: {{ . | quote }}
       http:
         paths:
