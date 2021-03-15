@@ -75,3 +75,12 @@ nodeSelector: {}
 tolerations: []
 
 affinity: {}
+
+salt-sproxy:
+  enabled: true
+  name: salt-sproxy
+  version:
+  image:
+    repository: mirceaulinic/salt-sproxy
+    tag: dev
+    pullPolicy: IfNotPresent

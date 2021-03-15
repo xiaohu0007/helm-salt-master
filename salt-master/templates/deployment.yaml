@@ -23,7 +23,7 @@ spec:
       labels:
         app: {{ include "salt-master.name" . }}
         release: {{ .Release.Name }}
-    spec:      
+    spec:
       hostNetwork: {{ .Values.hostNetwork }}
       containers:
         - name: {{ .Chart.Name }}
@@ -85,6 +85,15 @@ spec:
               subPath: srv
           resources:
 {{ toYaml .Values.resources | indent 12 }}
+        {{- if .Values.salt-sproxy.enabled -}}
+        - name: {{ .Values.salt-sproxy.name }}
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          volumeMounts:
+            - mountPath: /srv/salt # Contains states, pillars etc if not using gitfs backend
+              name: data
+              subPath: srv
+        {{- end -}}
       volumes:
         - name: data
         {{- if .Values.persistence.enabled }}
