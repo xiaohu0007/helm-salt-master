@@ -76,7 +76,7 @@ tolerations: []
 
 affinity: {}
 
-salt-sproxy:
+salt_sproxy:
   enabled: true
   name: salt-sproxy
   version:

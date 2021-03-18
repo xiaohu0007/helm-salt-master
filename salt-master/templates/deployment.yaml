@@ -85,15 +85,15 @@ spec:
               subPath: srv
           resources:
 {{ toYaml .Values.resources | indent 12 }}
-        {{- if .Values.salt-sproxy.enabled -}}
-        - name: {{ .Values.salt-sproxy.name }}
-          image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
-          imagePullPolicy: {{ .Values.image.pullPolicy }}
+        {{- if .Values.salt_sproxy.enabled }}
+        - name: {{ .Values.salt_sproxy.name }}
+          image: "{{ .Values.salt_sproxy.image.repository }}:{{ .Values.salt_sproxy.image.tag }}"
+          imagePullPolicy: {{ .Values.salt_sproxy.image.pullPolicy }}
           volumeMounts:
             - mountPath: /srv/salt # Contains states, pillars etc if not using gitfs backend
               name: data
               subPath: srv
-        {{- end -}}
+        {{- end }}
       volumes:
         - name: data
         {{- if .Values.persistence.enabled }}
